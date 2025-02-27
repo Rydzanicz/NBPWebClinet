@@ -5,7 +5,7 @@ import java.util.List;
 
 public class CurrencyRatesAllList {
 
-    private final List<CurrencyRate> currencyRate;
+    private List<CurrencyRate> currencyRate;
 
     public CurrencyRatesAllList(final List<CurrencyRate> currencyRates) {
         this.currencyRate = currencyRates;
@@ -22,6 +22,10 @@ public class CurrencyRatesAllList {
 
     public void addCurrencyRate(final CurrencyRate currencyRate) {
         this.currencyRate.add(currencyRate);
+    }
+
+    public void setCurrencyRateList(List<CurrencyRate> rates) {
+        currencyRate = rates;
     }
 }
 
