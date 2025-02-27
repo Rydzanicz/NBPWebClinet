@@ -31,7 +31,6 @@ public class CalculationController {
 
     @GetMapping(value = "/get-last-hundred", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> getLastHundred(@RequestParam String currency,
-                                                 @RequestParam(required = false) String sortBy,
                                                  @RequestParam(required = false, defaultValue = "ASC") String sortDirection,
                                                  @RequestParam(required = false, defaultValue = "0") int page,
                                                  @RequestParam(required = false, defaultValue = "10") int size,
@@ -59,7 +58,6 @@ public class CalculationController {
             final CurrencyRatesAllList currencyRatesAllList = nbpClient.getCurrencyExchangeRateMediumLastHundred(newCurrency);
 
             final List<CurrencyRate> filteredSortedPaginatedData = applyFiltersSortAndPagination(currencyRatesAllList.getCurrencyRate(),
-                                                                                                 sortBy,
                                                                                                  sortDirection,
                                                                                                  page,
                                                                                                  size,
@@ -87,7 +85,6 @@ public class CalculationController {
     }
 
     private List<CurrencyRate> applyFiltersSortAndPagination(final List<CurrencyRate> data,
-                                                             final String sortBy,
                                                              final String sortDirection,
                                                              final int page,
                                                              final int size,
@@ -95,7 +92,7 @@ public class CalculationController {
                                                              final String endDate) {
         return data.stream()
                    .filter(rate -> applyDateFilter(rate, startDate, endDate))
-                   .sorted(getComparator(sortBy, sortDirection))
+                   .sorted(getComparator(sortDirection))
                    .skip((long) page * size)
                    .limit(size)
                    .toList();
@@ -118,15 +115,10 @@ public class CalculationController {
         }
     }
 
-    private Comparator<CurrencyRate> getComparator(final String sortBy, final String sortDirection) {
+    private Comparator<CurrencyRate> getComparator(final String sortDirection) {
         Comparator<CurrencyRate> comparator;
 
-        if ("exchangeRateDateForMid".equalsIgnoreCase(sortBy)) {
-            comparator = Comparator.comparing(CurrencyRate::getExchangeRateDateForBuyAndSell);
-        } else {
-            comparator = Comparator.comparing(CurrencyRate::getExchangeRateDateForBuyAndSell);
-        }
-
+        comparator = Comparator.comparing(CurrencyRate::getExchangeRateDateForBuyAndSell);
         if ("DESC".equalsIgnoreCase(sortDirection)) {
             comparator = comparator.reversed();
         }
