@@ -55,6 +55,7 @@ public class Calculation {
         return amount * currencyRat - commissionLocal;
     }
 
+
     public double getCurrencyRate() {
 
         final Optional<CurrencyRate> getCurrencyRate = getCurrencyRate(this.selectGetCurrency);
