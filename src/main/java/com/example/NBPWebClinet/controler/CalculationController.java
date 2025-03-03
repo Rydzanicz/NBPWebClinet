@@ -18,6 +18,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 public class CalculationController {
@@ -46,7 +47,10 @@ public class CalculationController {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN)
                                      .body("Error: Currency 'PLN' is not supported.");
             }
-
+            Optional<LocalDate> startLocalDate = Optional.ofNullable(startDate)
+                                                         .map(LocalDate::parse);
+            Optional<LocalDate> endLocalDate = Optional.ofNullable(endDate)
+                                                       .map(LocalDate::parse);
             Currency newCurrency;
             try {
                 newCurrency = Currency.valueOf(currency.toUpperCase());
@@ -61,8 +65,8 @@ public class CalculationController {
                                                                                                  sortDirection,
                                                                                                  page,
                                                                                                  size,
-                                                                                                 startDate,
-                                                                                                 endDate);
+                                                                                                 startLocalDate,
+                                                                                                 endLocalDate);
 
             final Map<String, Object> response = new HashMap<>();
             response.put("currentPage", page);
@@ -88,8 +92,8 @@ public class CalculationController {
                                                              final String sortDirection,
                                                              final int page,
                                                              final int size,
-                                                             final String startDate,
-                                                             final String endDate) {
+                                                             final Optional<LocalDate> startDate,
+                                                             final Optional<LocalDate> endDate) {
         return data.stream()
                    .filter(rate -> applyStartDateFilter(rate, startDate))
                    .filter(rate -> applyEndDateFilter(rate, endDate))
@@ -99,26 +103,20 @@ public class CalculationController {
                    .toList();
     }
 
-    private boolean applyStartDateFilter(final CurrencyRate rate, final String startDate) {
-
-        final LocalDate rateDate = rate.getExchangeRateDateForBuyAndSell();
-
-        if (startDate != null) {
-            return rateDate.isAfter(LocalDate.parse(startDate));
+    private boolean applyStartDateFilter(final CurrencyRate rate, final Optional<LocalDate> startDate) {
+        if (startDate.isEmpty()) {
+            return true;
         }
-
-        return true;
+        return !rate.getExchangeRateDateForBuyAndSell()
+                    .isBefore(startDate.get());
     }
 
-    private boolean applyEndDateFilter(final CurrencyRate rate, final String endDate) {
-
-        final LocalDate rateDate = rate.getExchangeRateDateForBuyAndSell();
-
-        if (endDate != null) {
-            return rateDate.isBefore(LocalDate.parse(endDate));
+    private boolean applyEndDateFilter(final CurrencyRate rate, final Optional<LocalDate> endDate) {
+        if (endDate.isEmpty()) {
+            return true;
         }
-
-        return true;
+        return !rate.getExchangeRateDateForBuyAndSell()
+                    .isAfter(endDate.get());
     }
 
     private Comparator<CurrencyRate> getComparator(final String sortDirection) {
