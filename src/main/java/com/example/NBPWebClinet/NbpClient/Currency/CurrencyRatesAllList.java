@@ -7,10 +7,6 @@ public class CurrencyRatesAllList {
 
     private List<CurrencyRate> currencyRate;
 
-    public CurrencyRatesAllList(final List<CurrencyRate> currencyRates) {
-        this.currencyRate = currencyRates;
-    }
-
     public CurrencyRatesAllList() {
 
         this.currencyRate = new ArrayList<>();
@@ -18,10 +14,6 @@ public class CurrencyRatesAllList {
 
     public List<CurrencyRate> getCurrencyRate() {
         return currencyRate;
-    }
-
-    public void addCurrencyRate(final CurrencyRate currencyRate) {
-        this.currencyRate.add(currencyRate);
     }
 
     public void setCurrencyRateList(List<CurrencyRate> rates) {

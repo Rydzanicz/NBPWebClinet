@@ -91,28 +91,34 @@ public class CalculationController {
                                                              final String startDate,
                                                              final String endDate) {
         return data.stream()
-                   .filter(rate -> applyDateFilter(rate, startDate, endDate))
+                   .filter(rate -> applyStartDateFilter(rate, startDate))
+                   .filter(rate -> applyEndDateFilter(rate, endDate))
                    .sorted(getComparator(sortDirection))
                    .skip((long) page * size)
                    .limit(size)
                    .toList();
     }
 
-    private boolean applyDateFilter(final CurrencyRate rate, final String startDate, final String endDate) {
-        try {
-            final LocalDate rateDate = rate.getExchangeRateDateForBuyAndSell();
-            final LocalDate start = (startDate != null) ? LocalDate.parse(startDate) : null;
-            final LocalDate end = (endDate != null) ? LocalDate.parse(endDate) : null;
+    private boolean applyStartDateFilter(final CurrencyRate rate, final String startDate) {
 
-            if (start != null && rateDate.isBefore(start)) {
-                return false;
-            }
-            return end == null || !rateDate.isAfter(end);
+        final LocalDate rateDate = rate.getExchangeRateDateForBuyAndSell();
 
-        } catch (Exception e) {
-            LOGGER.error("Invalid date format in filter: {}", e.getMessage());
-            return false;
+        if (startDate != null) {
+            return rateDate.isAfter(LocalDate.parse(startDate));
         }
+
+        return true;
+    }
+
+    private boolean applyEndDateFilter(final CurrencyRate rate, final String endDate) {
+
+        final LocalDate rateDate = rate.getExchangeRateDateForBuyAndSell();
+
+        if (endDate != null) {
+            return rateDate.isBefore(LocalDate.parse(endDate));
+        }
+
+        return true;
     }
 
     private Comparator<CurrencyRate> getComparator(final String sortDirection) {

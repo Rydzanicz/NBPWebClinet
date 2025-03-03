@@ -16,28 +16,6 @@ public class CurrencyRate {
         this.sell = sell;
     }
 
-    public CurrencyRate(final String currency, final LocalDate exchangeRateDateForBuyAndSell, final Double buy, final Double sell) {
-        this.currency = Currency.valueOf(currency);
-        this.exchangeRateDateForBuyAndSell = exchangeRateDateForBuyAndSell;
-        this.buy = buy;
-        this.sell = sell;
-
-    }
-
-    public CurrencyRate() {
-        this.currency = null;
-        this.exchangeRateDateForBuyAndSell = null;
-        this.buy = null;
-        this.sell = null;
-    }
-
-    public CurrencyRate(final Currency currency) {
-        this.currency = currency;
-        this.exchangeRateDateForBuyAndSell = null;
-        this.buy = null;
-        this.sell = null;
-    }
-
     public Currency getCurrency() {
         return currency;
     }
